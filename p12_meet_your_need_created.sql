@@ -1,5 +1,5 @@
-CREATE DATABASE Meet_Your_Need;
-USE Meet_Your_Need;
+CREATE DATABASE P12_Meet_Your_Need;
+USE P12_Meet_Your_Need;
 
 -- 1. Role Table
 CREATE TABLE Role (
