@@ -1,4 +1,4 @@
-USE P12_Meet_Your_Need;
+USE p12_Meet_Your_Need;
 
 -- 1. Role Table
 INSERT INTO Role (rname) VALUES
