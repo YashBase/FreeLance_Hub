@@ -18,6 +18,7 @@ CREATE TABLE User_Table (
     FOREIGN KEY (role_id) REFERENCES Role(role_id)
 );
 
+
 -- 3. Client Table
 CREATE TABLE Client_Table (
     client_id INT PRIMARY KEY AUTO_INCREMENT,
