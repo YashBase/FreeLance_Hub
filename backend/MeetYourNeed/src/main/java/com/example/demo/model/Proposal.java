@@ -1,0 +1,42 @@
+package com.example.demo.model;
+
+import jakarta.persistence.*;
+
+
+@Entity
+@Table(name = "proposals_table")
+public class Proposal {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "proposal_id")
+    private int proposalId;
+
+    @ManyToOne
+    @JoinColumn(name = "req_id")
+    private Requirement requirement;
+
+    @ManyToOne
+    @JoinColumn(name = "vendor_id")
+    private Vendor vendor;
+
+    private String summary;
+
+    private String status; // pending, accepted, rejected
+
+    // Getters and Setters
+    public int getProposalId() { return proposalId; }
+    public void setProposalId(int proposalId) { this.proposalId = proposalId; }
+
+    public Requirement getRequirement() { return requirement; }
+    public void setRequirement(Requirement requirement) { this.requirement = requirement; }
+
+    public Vendor getVendor() { return vendor; }
+    public void setVendor(Vendor vendor) { this.vendor = vendor; }
+
+    public String getSummary() { return summary; }
+    public void setSummary(String summary) { this.summary = summary; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+}
