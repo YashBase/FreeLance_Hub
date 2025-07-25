@@ -1,5 +1,5 @@
-CREATE DATABASE Meet_Your_Need;
-USE Meet_Your_Need;
+CREATE DATABASE p12_Meet_Your_Need;
+USE p12_Meet_Your_Need;
 
 -- 1. Role Table
 CREATE TABLE Role (
@@ -17,6 +17,7 @@ CREATE TABLE User_Table (
     email VARCHAR(100) NOT NULL UNIQUE,
     FOREIGN KEY (role_id) REFERENCES Role(role_id)
 );
+
 
 -- 3. Client Table
 CREATE TABLE Client_Table (
@@ -51,6 +52,8 @@ CREATE TABLE VendorSkills_Table (
     FOREIGN KEY (skill_id) REFERENCES Skill_Table(skill_id)
 );
 
+
+
 -- 7. Requirement Table
 CREATE TABLE Requirement_Table (
     req_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -58,7 +61,6 @@ CREATE TABLE Requirement_Table (
     title VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
     budget DECIMAL(10,2) NOT NULL CHECK (budget >= 0),
-    reqskill_id INT NOT NULL,
     FOREIGN KEY (client_id) REFERENCES Client_Table(client_id)
 );
 
@@ -115,3 +117,4 @@ CREATE TABLE vendorfeedback_Table (
     FOREIGN KEY (vendor_id) REFERENCES Vendor_Table(vendor_id),
     FOREIGN KEY (client_id) REFERENCES Client_Table(client_id)
 );
+
