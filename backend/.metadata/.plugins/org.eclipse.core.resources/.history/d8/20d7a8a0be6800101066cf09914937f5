@@ -1,0 +1,52 @@
+package com.example.demo.model;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "user_table")
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="user_id")
+    private int user_id;
+
+    @Column(name="user_name")
+    @JsonProperty("fullName")
+    private String user_name;
+    @Column(name="user_password")
+    private String password;
+    @Column(name="email")
+    private String email;
+    @Column(name="contact")
+    private String contact;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+    // Getters and Setters
+    public int getUserId() { return user_id; }
+    public void setUserId(int user_id) { this.user_id = user_id; }
+
+    public String getUserName() { return user_name; }
+    public void setUserName(String user_name) { this.user_name = user_name; }
+
+    public String getPassword() {        // ✅ MATCH FIELD NAME
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getContact() { return contact; }
+    public void setContact(String contact) { this.contact = contact; }
+
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
+}

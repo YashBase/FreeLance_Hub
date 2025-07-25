@@ -1,0 +1,48 @@
+package com.example.demo.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
+
+import java.util.Optional;
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    // ✅ Register user (Client or Vendor only)
+    public String registerUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            return "Email already registered!";
+        }
+
+        // Admin should NOT be allowed to register via frontend
+        if ("Admin".equalsIgnoreCase(user.getRole())) {
+            return "Admin registration is not allowed!";
+        }
+
+        userRepository.save(user);
+        return "User registered successfully!";
+    }
+
+    // ✅ Login user and detect role
+    public Optional<User> loginUser(String email, String password) {
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        
+        if (existingUser.isPresent() && existingUser.get().getPassword().equals(password)) {
+            return existingUser;
+        }
+
+        return Optional.empty();
+    }
+    
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+}
+
