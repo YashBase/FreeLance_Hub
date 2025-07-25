@@ -1,10 +1,12 @@
 package com.example.demo.service;
 
+import com.example.demo.model.User;
+import com.example.demo.model.Role;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.RoleRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
 
 import java.util.Optional;
 
@@ -14,30 +16,31 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    // ✅ Register user (Client or Vendor only)
+    @Autowired
+    private RoleRepository roleRepository;
+
     public String registerUser(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
             return "Email already registered!";
         }
 
-        // Admin should NOT be allowed to register via frontend
-        if ("Admin".equalsIgnoreCase(user.getRole())) {
-            return "Admin registration is not allowed!";
+        Optional<Role> role = roleRepository.findByRname(user.getRole().getRname());
+        if (!role.isPresent()) {
+            return "Invalid role!";
         }
 
+        user.setRole(role.get());
         userRepository.save(user);
+
         return "User registered successfully!";
     }
 
-    // ✅ Login user and detect role
     public Optional<User> loginUser(String email, String password) {
-        Optional<User> existingUser = userRepository.findByEmail(email);
-        
-        if (existingUser.isPresent() && existingUser.get().getPassword().equals(password)) {
-            return existingUser;
-        }
+        Optional<User> user = userRepository.findByEmail(email);
+        return user.filter(u -> u.getPassword().equals(password));
+    }
 
-        return Optional.empty();
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }
-
