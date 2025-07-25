@@ -1,0 +1,35 @@
+package com.example.demo.controller;
+
+import com.example.demo.model.Role;
+import com.example.demo.model.User;
+import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
+public class AuthController {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @GetMapping("/users/role/{roleId}")
+    public ResponseEntity<List<User>> getUsersByRole(@PathVariable Long roleId) {
+        Optional<Role> role = roleRepository.findById(roleId);
+        if (role.isPresent()) {
+            List<User> users = userRepository.findByRole(role.get());
+            return ResponseEntity.ok(users);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+}
