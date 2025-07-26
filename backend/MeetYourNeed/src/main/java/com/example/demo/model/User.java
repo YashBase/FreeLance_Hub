@@ -1,55 +1,51 @@
 package com.example.demo.model;
 
-
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user_table")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name="user_id")
+    private int user_id;
 
-    private String fullName;
+    @Column(name="user_name")
+    @JsonProperty("fullName") // Matches JSON field from frontend
+    private String user_name;
 
-    @Column(unique = true)
-    private String email;
-
+    @Column(name="user_password")
+    @JsonProperty("password") // Matches JSON field from frontend
     private String password;
 
+    @Column(name="email")
+    private String email;
+
+    @Column(name="contact")
     private String contact;
 
-    private String role;  // "Client", "Vendor", or "Admin"
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
-    // === Constructors ===
-    public User() {}
+    // Getters and Setters
+    public int getUser_id() { return user_id; }
+    public void setUser_id(int user_id) { this.user_id = user_id; }
 
-    public User(String fullName, String email, String password, String contact, String role) {
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.contact = contact;
-        this.role = role;
-    }
-
-    // === Getters & Setters ===
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getUser_name() { return user_name; }
+    public void setUser_name(String user_name) { this.user_name = user_name; }
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
     public String getContact() { return contact; }
     public void setContact(String contact) { this.contact = contact; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 }
