@@ -1,26 +1,38 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../redux/authSlice';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const loginData = {
-      email,
-      password
-    };
+    const loginData = { email, password };
 
     try {
       const response = await axios.post("http://localhost:8080/api/login", loginData);
-      console.log("User Data:", response.data); // Optional: See what you get
+
+      const user = response.data;
+      dispatch(loginSuccess(user)); // ✅ Save to Redux
+
       alert("Login successful!");
-      // You can save token / session data here
-      navigate("/dashboard");
+
+      // ✅ Navigate based on role
+      const role = user?.role?.rname?.toLowerCase();
+      if (role === "client") {
+        navigate("/client/dashboard");
+      } else if (role === "vendor") {
+        navigate("/vendor/dashboard"); // You can set this up later
+      } else {
+        alert("Invalid role, please contact admin.");
+      }
+
     } catch (err) {
       console.error("Login Error:", err.response?.data || err.message);
       alert("Login failed: Invalid credentials");
