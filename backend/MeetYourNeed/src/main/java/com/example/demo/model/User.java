@@ -1,6 +1,5 @@
 package com.example.demo.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,43 +8,71 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_id")
-    private int user_id;
+    @Column(name = "user_id")
+    private int userId;
 
-    @Column(name="user_name")
-    @JsonProperty("fullName") // Matches JSON field from frontend
-    private String user_name;
+    @Column(name = "user_name")
+    private String userName;
 
-    @Column(name="user_password")
-    @JsonProperty("password") // Matches JSON field from frontend
+    @Column(name = "user_password")
     private String password;
 
-    @Column(name="email")
-    private String email;
-
-    @Column(name="contact")
+    @Column(name = "contact")
     private String contact;
 
+    @Column(name = "email")
+    private String email;
+
     @ManyToOne
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", referencedColumnName = "role_id")
     private Role role;
 
     // Getters and Setters
-    public int getUser_id() { return user_id; }
-    public void setUser_id(int user_id) { this.user_id = user_id; }
+    public int getUserId() {
+        return userId;
+    }
 
-    public String getUser_name() { return user_name; }
-    public void setUser_name(String user_name) { this.user_name = user_name; }
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getUserName() {
+        return userName;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-    public String getContact() { return contact; }
-    public void setContact(String contact) { this.contact = contact; }
+    public String getUserPassword() {
+        return password;
+    }
 
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
+    public void setUserPassword(String userPassword) {
+        this.password = userPassword;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }

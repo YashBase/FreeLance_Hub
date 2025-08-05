@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosClient from "../API/axiosClient";
 
-// 🔄 Async thunk: fetch tasks assigned to this client
 export const fetchTasksByClientEmail = createAsyncThunk(
   "tasks/fetchByClientEmail",
   async (email, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`http://localhost:8080/client/tasks/${email}`);
+     const res = await axiosClient.get(`/tasks/${email}`);
+
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Failed to fetch tasks");
@@ -26,7 +26,6 @@ const taskSlice = createSlice({
     builder
       .addCase(fetchTasksByClientEmail.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchTasksByClientEmail.fulfilled, (state, action) => {
         state.loading = false;

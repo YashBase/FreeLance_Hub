@@ -4,6 +4,7 @@ import requirementsReducer from './requirementsSlice';
 import proposalsReducer from './proposalsSlice';
 import taskReducer from "./taskSlice";
 
+
 const store = configureStore({
   reducer: {
     auth: authReducer,

@@ -1,39 +1,55 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useSelector } from "react-redux";
+import axiosClient from "../API/axiosClient";
 
 function AddRequirementForm({ onRequirementAdded }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [budget, setBudget] = useState("");
   const user = useSelector((state) => state.auth.user);
+  const baseURL = "http://localhost:8081/api/requirement"
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const payload = {
-        title,
-        description,
-        budget: parseFloat(budget),
-        client: { user: { user_id: user.user_id } }
-      };
+    // 🚨 Safety check
+    if (!user || !user.userId) {
+      alert("❌ Client ID missing! Make sure you're logged in as a Client.");
+      console.error("Missing clientId in Redux state:", user);
+      return;
+    }
 
-      await axios.post("http://localhost:8080/api/requirements", payload);
-      alert("Requirement added!");
+    const payload = {
+      title,
+      description,
+      budget: parseFloat(budget),
+      userid: user.userId
+      
+    };
+
+    console.log("📦 Sending requirement payload:", payload);
+
+    try {
+      await axiosClient.post(baseURL+"/add", payload);
+      alert("✅ Requirement added successfully!");
       setTitle("");
       setDescription("");
       setBudget("");
-      onRequirementAdded(); // ✅ Refresh the list in ClientDashboard
+      onRequirementAdded(); // Refresh the list
     } catch (err) {
-      console.error("Add requirement error:", err);
-      alert("Failed to add requirement.");
+      console.error("❌ Add requirement error:", err);
+      if (err.response) {
+        alert("🚫 Backend error: " + err.response.data.message || "Unknown backend error");
+      } else {
+        alert("❌ Failed to add requirement. Make sure your backend (8081) is running.");
+      }
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="mb-4 p-3 border rounded shadow-sm bg-light">
       <h5 className="mb-3">➕ Add New Requirement</h5>
+
       <div className="mb-3">
         <label className="form-label">Title</label>
         <input
@@ -44,6 +60,7 @@ function AddRequirementForm({ onRequirementAdded }) {
           required
         />
       </div>
+
       <div className="mb-3">
         <label className="form-label">Description</label>
         <textarea
@@ -54,6 +71,7 @@ function AddRequirementForm({ onRequirementAdded }) {
           required
         ></textarea>
       </div>
+
       <div className="mb-3">
         <label className="form-label">Budget (₹)</label>
         <input
@@ -64,6 +82,7 @@ function AddRequirementForm({ onRequirementAdded }) {
           required
         />
       </div>
+
       <button type="submit" className="btn btn-success w-100">
         Submit Requirement
       </button>

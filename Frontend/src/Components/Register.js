@@ -3,10 +3,10 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function Register() {
-  const [fullName, setFullName] = useState('');
+  const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [contact, setContact] = useState('');
-  const [password, setPassword] = useState('');
+  const [userPassword, setUserPassword] = useState('');
   const [role, setRole] = useState('Client');
 
   const navigate = useNavigate();
@@ -15,16 +15,17 @@ function Register() {
     e.preventDefault();
 
     const userData = {
-      fullName,     // ✅ This maps to `user_name` in backend via @JsonProperty
+      userName,
+      userPassword,
       email,
       contact,
-      password,     // ✅ This maps to `user_password` in backend
       role: {
-        rname: role // ✅ Matches Role model in backend
+        rname: role
       }
     };
 
     try {
+      console.log("User Data: ", userData);
       const response = await axios.post("http://localhost:8080/api/register", userData);
       alert(response.data || "Registered successfully");
       navigate("/login");
@@ -40,7 +41,7 @@ function Register() {
       <form onSubmit={handleSubmit} className="col-md-6 mx-auto">
         <div className="form-group mb-3">
           <label>Full Name</label>
-          <input type="text" className="form-control" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+          <input type="text" className="form-control" value={userName} onChange={(e) => setUserName(e.target.value)} required />
         </div>
         <div className="form-group mb-3">
           <label>Email</label>
@@ -52,7 +53,7 @@ function Register() {
         </div>
         <div className="form-group mb-3">
           <label>Password</label>
-          <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input type="password" className="form-control" value={userPassword} onChange={(e) => setUserPassword(e.target.value)} required />
         </div>
         <div className="form-group mb-3">
           <label>Role</label>

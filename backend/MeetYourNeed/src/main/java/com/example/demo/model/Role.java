@@ -8,14 +8,26 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int role_id;
+    @Column(name = "role_id")
+    private int roleId;
 
+    @Column(name = "rname")
     private String rname;
 
-    // Getters and Setters
-    public int getRole_id() { return role_id; }
-    public void setRole_id(int role_id) { this.role_id = role_id; }
+    // ❌ You might be missing these:
+    public int getRoleId() {
+        return roleId;
+    }
 
-    public String getRname() { return rname; }
-    public void setRname(String rname) { this.rname = rname; }
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
+    }
+
+    public String getRname() {
+        return rname;
+    }
+
+    public void setRname(String rname) {
+        this.rname = rname;
+    }
 }
