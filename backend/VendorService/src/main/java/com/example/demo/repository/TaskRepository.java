@@ -19,4 +19,15 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
         AND p.status = 'accepted'
       """)
     List<Task> findTasksByVendorIdAndAcceptedProposal(Integer vendorId);
+    
+    List<Task> findByProposalVendorVendorId(Integer vendorId);
+    
+    // Count tasks assigned to vendor (via proposal)
+    long countByProposalVendorVendorId(Integer vendorId);
+
+    // Count tasks by status per vendor
+    long countByProposalVendorVendorIdAndStatus(Integer vendorId, String status);
+
+    // Optionally list tasks by vendor and status for additional use
+    List<Task> findByProposalVendorVendorIdAndStatus(Integer vendorId, String status);
 }

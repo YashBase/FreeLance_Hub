@@ -18,4 +18,10 @@ public interface ProposalRepository extends JpaRepository<Proposal, Integer> {
 
     // Find a specific proposal for a requirement & vendor
     Optional<Proposal> findByRequirementReqIdAndVendorVendorId(Integer reqId, Integer vendorId);
+    
+    long countByVendorVendorId(Integer vendorId);
+
+    long countByVendorVendorIdAndStatus(Integer vendorId, com.example.demo.DTO.ProposalStatus status);
+
+    List<Proposal> findByVendorVendorIdAndStatus(Integer vendorId, com.example.demo.DTO.ProposalStatus status);
 }

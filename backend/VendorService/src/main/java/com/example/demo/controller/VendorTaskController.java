@@ -1,9 +1,9 @@
 package com.example.demo.controller;
 
-
 import com.example.demo.DTO.VendorTaskDTO;
+import com.example.demo.entity.Task;
 import com.example.demo.services.VendorTaskService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,20 +11,35 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/vendor/tasks")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class VendorTaskController {
 
     private final VendorTaskService vendorTaskService;
 
     /**
-     * Get all accepted tasks assigned to the vendor.
-     * 
-     * @param vendorId The vendor's ID (could also be retrieved from auth token/session in real app)
-     * @return List of tasks as DTOs
+     * Get accepted tasks for a vendor (DTO view)
+     */
+    @GetMapping("/accepted/{vendorId}")
+    public ResponseEntity<List<VendorTaskDTO>> getAcceptedTasks(@PathVariable Integer vendorId) {
+        return ResponseEntity.ok(vendorTaskService.getAcceptedTasksForVendor(vendorId));
+    }
+
+    /**
+     * Update status of a task
+     */
+    @PutMapping("/{taskId}/status")
+    public ResponseEntity<Task> updateTaskStatus(
+            @PathVariable Integer taskId,
+            @RequestParam String newStatus
+    ) {
+        return ResponseEntity.ok(vendorTaskService.updateTaskStatus(taskId, newStatus));
+    }
+
+    /**
+     * Get all tasks assigned to a vendor
      */
     @GetMapping("/{vendorId}")
-    public ResponseEntity<List<VendorTaskDTO>> getAcceptedTasks(@PathVariable Integer vendorId) {
-        List<VendorTaskDTO> tasks = vendorTaskService.getAcceptedTasksForVendor(vendorId);
-        return ResponseEntity.ok(tasks);
+    public ResponseEntity<List<Task>> getAllTasks(@PathVariable Integer vendorId) {
+        return ResponseEntity.ok(vendorTaskService.getTasksByVendorId(vendorId));
     }
 }

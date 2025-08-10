@@ -20,4 +20,12 @@ public interface TaskRepository extends JpaRepository<TaskTable, Integer> {
 	            @Param("status") TaskTable.TaskStatus status,
 	            @Param("keyword") String keyword
 	    );
+	   
+	   /**
+	     * Count number of tasks completed for proposals that belong to client's requirements.
+	     */
+	    @Query("SELECT COUNT(t) FROM TaskTable t WHERE t.proposal.requirement.client.clientId = :clientId AND t.status = 'completed'")
+	    long countCompletedTasksByClient(Integer clientId);
 }
+
+
