@@ -33,4 +33,12 @@ public interface RequirementRepository extends JpaRepository<RequirementTable, I
             @Param("maxBudget") BigDecimal maxBudget,
             @Param("sortBy") String sortBy
     );
+    
+ // Count requirements matched to vendor's skills or other logic can be custom implemented if needed.
+    // Since "matched requirements" depends on your business logic,
+    // here we provide a method placeholder or count all for demo.
+
+    // Example: count all requirements (You should adjust to your matching logic)
+    long count();
+
 }
