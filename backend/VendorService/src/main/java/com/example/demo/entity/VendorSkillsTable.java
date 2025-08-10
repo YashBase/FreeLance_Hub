@@ -1,5 +1,8 @@
 package com.example.demo.entity;
 
+import com.example.demo.DTO.ProposalStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +12,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 public class VendorSkillsTable {
 
     @Id
@@ -18,9 +23,11 @@ public class VendorSkillsTable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_id", nullable = false)
+    @JsonIgnore
     private VendorTable vendor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "skill_id", nullable = false)
+    @JsonIgnore
     private SkillTable skill;
 }

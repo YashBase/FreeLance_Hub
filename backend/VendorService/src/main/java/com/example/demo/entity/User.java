@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import com.example.demo.DTO.ProposalStatus;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 public class User {
 
     @Id

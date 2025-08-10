@@ -6,6 +6,7 @@ import lombok.*;
 import java.math.BigDecimal;
 
 import com.example.demo.DTO.ProposalStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "proposals_table")
@@ -13,6 +14,8 @@ import com.example.demo.DTO.ProposalStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 public class Proposal {
 
     @Id
@@ -20,19 +23,23 @@ public class Proposal {
     @Column(name = "proposal_id")
     private Integer proposalId;
 
-    @Column(name = "req_id", nullable = false)
-    private Integer reqId;
+    // Map to Requirement entity instead of just reqId
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "req_id", nullable = false)
+    @JsonIgnore
+    private RequirementTable requirement;
 
-    @Column(name = "vendor_id", nullable = false)
-    private Integer vendorId;
+    // Map to Vendor entity instead of just vendorId
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vendor_id", nullable = false)
+    @JsonIgnore
+    private VendorTable vendor;
 
     @Lob
     @Column(name = "summary")
     private String summary;
 
-    // matches DB check constraint values: 'pending','accepted','rejected'
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ProposalStatus status;
-
 }
