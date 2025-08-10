@@ -6,10 +6,23 @@ export const fetchProposalsByEmail = createAsyncThunk(
   "proposals/fetchByEmail",
   async (email, { rejectWithValue }) => {
     try {
-      const response = await axiosClient.get(`/client/proposals/${email}`);
+      const response = await axiosClient.get(`/proposals/${email}`);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Failed to fetch proposals");
+    }
+  }
+);
+
+// 🔄 Fetch proposals by requirement ID (for filter dropdown)
+export const fetchProposalsByRequirementId = createAsyncThunk(
+  "proposals/fetchByRequirementId",
+  async (reqId, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.get(`/proposals/by-requirement/${reqId}`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to fetch proposals by requirement");
     }
   }
 );
@@ -19,7 +32,7 @@ export const acceptProposal = createAsyncThunk(
   "proposals/accept",
   async (proposalId, { rejectWithValue }) => {
     try {
-      const response = await axiosClient.post(`/client/accept-proposal/${proposalId}`);
+      await axiosClient.post(`/accept-proposal/${proposalId}`);
       return { proposalId, status: "accepted" };
     } catch (err) {
       return rejectWithValue("Failed to accept proposal");
@@ -32,7 +45,7 @@ export const rejectProposal = createAsyncThunk(
   "proposals/reject",
   async (proposalId, { rejectWithValue }) => {
     try {
-      const response = await axiosClient.post(`/client/reject-proposal/${proposalId}`);
+      await axiosClient.post(`/reject-proposal/${proposalId}`);
       return { proposalId, status: "rejected" };
     } catch (err) {
       return rejectWithValue("Failed to reject proposal");
@@ -50,7 +63,7 @@ const proposalsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // 🔄 FETCH proposals
+      // 📥 Fetch proposals by email
       .addCase(fetchProposalsByEmail.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -64,16 +77,32 @@ const proposalsSlice = createSlice({
         state.error = action.payload;
       })
 
+      // 📥 Fetch proposals by requirement ID
+      .addCase(fetchProposalsByRequirementId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProposalsByRequirementId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.proposals = action.payload;
+      })
+      .addCase(fetchProposalsByRequirementId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
       // ✅ Accept proposal
       .addCase(acceptProposal.fulfilled, (state, action) => {
         const { proposalId, status } = action.payload;
-        const proposal = state.proposals.find((p) => p.proposalId === proposalId);
-        if (proposal) {
-          proposal.status = status;
-        }
+        // Accept selected proposal and reject others
+        state.proposals = state.proposals.map((p) =>
+          p.proposalId === proposalId
+            ? { ...p, status }
+            : { ...p, status: "rejected" }
+        );
       })
 
-      // ✅ Reject proposal
+      // ❌ Reject proposal
       .addCase(rejectProposal.fulfilled, (state, action) => {
         const { proposalId, status } = action.payload;
         const proposal = state.proposals.find((p) => p.proposalId === proposalId);
