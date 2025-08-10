@@ -2,6 +2,8 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import com.example.demo.DTO.ProposalStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
@@ -12,7 +14,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder // Ignore Hibernate internal props for JSON serialization
+@Builder 
+@Getter
+@Setter// Ignore Hibernate internal props for JSON serialization
 public class RequirementTable {
 
     @Id
@@ -20,8 +24,11 @@ public class RequirementTable {
     @Column(name = "req_id")
     private Integer reqId;
 
-    @Column(name = "client_id", nullable = false)
-    private Integer clientId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = false)
+    @JsonIgnore
+    private Client client;
+
 
     @Column(name = "title", nullable = false)
     private String title;
