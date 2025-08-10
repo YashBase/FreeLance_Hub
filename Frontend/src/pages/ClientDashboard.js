@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchProposalsByEmail,
+  fetchProposalsByRequirementId,
+  acceptProposal,
+  rejectProposal,
+} from "../redux/proposalsSlice";
+import {
+  fetchTasksByClientEmail,
+  fetchTasksByRequirementId,
+} from "../redux/taskSlice";
 import { fetchRequirementsByEmail } from "../redux/requirementsSlice";
-import { fetchProposalsByEmail, acceptProposal, rejectProposal } from "../redux/proposalsSlice";
-import { fetchTasksByClientEmail } from "../redux/taskSlice";
 import AddRequirementForm from "../Components/AddRequirementForm";
 import axiosClient from "../API/axiosClient";
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -40,7 +48,7 @@ function ClientDashboard() {
           rating: parseFloat(rating),
         },
       });
-      alert(response.data); // Message from backend
+      alert(response.data);
       setVendorId("");
       setRating("");
     } catch (error) {
@@ -96,16 +104,49 @@ function ClientDashboard() {
       {tab === "proposals" && (
         <>
           <h4 className="mb-3">📬 Received Proposals</h4>
+
+          {/* Filter by Requirement */}
+          <div className="mb-3">
+            <label htmlFor="requirementSelect" className="form-label">Filter by Requirement Title</label>
+            <select
+              id="requirementSelect"
+              className="form-select"
+              onChange={(e) => {
+                const reqId = e.target.value;
+                if (!reqId) {
+                  dispatch(fetchProposalsByEmail(email));
+                  return;
+                }
+
+                const selectedReq = requirements.find(r => r.reqId == reqId);
+                if (selectedReq?.status === 1) {
+                  alert("This requirement is CLOSED. No proposals will be shown.");
+                  dispatch(fetchProposalsByEmail(email));
+                } else {
+                  dispatch(fetchProposalsByRequirementId(reqId));
+                }
+              }}
+            >
+              <option value="">-- Select Requirement --</option>
+              {requirements.map((req) => (
+                <option key={req.reqId} value={req.reqId}>
+                  {req.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {proposals.length === 0 ? (
-            <p>No proposals received.</p>
+            <p>No proposals to display.</p>
           ) : (
             <div className="row">
               {proposals.map((p) => (
                 <div key={p.proposalId} className="col-md-6 col-lg-4 mb-4">
                   <div className="card border-success shadow-sm h-100">
                     <div className="card-body">
-                      <h5 className="card-title">Vendor #{p.vendor.vendor_id}</h5>
+                      <h5 className="card-title">Vendor: {p.vendorName || p.vendor?.user?.fullName || "N/A"}</h5>
                       <p className="card-text">{p.summary}</p>
+                      <p><strong>Requirement:</strong> {p.requirementTitle || p.requirement?.title}</p>
                       <span className={`badge mb-2 ${p.status === 'accepted' ? 'bg-success' : p.status === 'rejected' ? 'bg-danger' : 'bg-secondary'}`}>
                         {p.status.toUpperCase()}
                       </span>
@@ -138,6 +179,37 @@ function ClientDashboard() {
       {tab === "tasks" && (
         <>
           <h4 className="mb-3">📋 Tasks</h4>
+
+          {/* Filter by Requirement for Tasks */}
+          <div className="mb-3">
+            <label htmlFor="taskRequirementSelect" className="form-label">Filter Tasks by Requirement</label>
+            <select
+              id="taskRequirementSelect"
+              className="form-select"
+              onChange={(e) => {
+                const reqId = e.target.value;
+                if (!reqId) {
+                  dispatch(fetchTasksByClientEmail(email));
+                } else {
+                  const selectedReq = requirements.find(r => r.reqId == reqId);
+                  if (selectedReq?.status === 1) {
+                    alert("This requirement is CLOSED. No tasks will be shown.");
+                    dispatch(fetchTasksByClientEmail(email));
+                  } else {
+                    dispatch(fetchTasksByRequirementId(reqId));
+                  }
+                }
+              }}
+            >
+              <option value="">-- Select Requirement --</option>
+              {requirements.map((req) => (
+                <option key={req.reqId} value={req.reqId}>
+                  {req.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {tasks.length === 0 ? (
             <p>No tasks assigned.</p>
           ) : (
@@ -148,8 +220,11 @@ function ClientDashboard() {
                     <div className="card-body">
                       <h5 className="card-title">{t.taskName}</h5>
                       <p className="card-text">{t.taskDescription}</p>
-                      <p><strong>Start:</strong> {t.startDate}</p>
-                      <p><strong>End:</strong> {t.endDate}</p>
+                      <p><strong>Start Date:</strong> {t.startDate}</p>
+                      <p><strong>End Date:</strong> {t.endDate}</p>
+                      <hr />
+                      <p><strong>Proposal:</strong> {t.proposal?.summary}</p>
+                      <p><strong>Vendor:</strong> {t.proposal?.vendor?.user?.fullName}</p>
                     </div>
                   </div>
                 </div>

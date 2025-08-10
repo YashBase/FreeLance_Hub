@@ -5,7 +5,7 @@ export const fetchRequirementsByEmail = createAsyncThunk(
   "requirements/fetchByEmail",
   async (email, { rejectWithValue }) => {
     try {
-      const response = await axiosClient.get(`/api/client/requirements/${email}`);
+      const response = await axiosClient.get(`/requirements/${email}`);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Failed to fetch requirements");
@@ -25,7 +25,7 @@ export const createRequirement = createAsyncThunk(
         client: { clientId }, // ✅ Matches backend model
       };
 
-      const response = await axiosClient.post("/api/requirement/add", payload);
+      const response = await axiosClient.post("/requirement/add", payload);
 
       return response.data;
     } catch (err) {

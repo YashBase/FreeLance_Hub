@@ -6,6 +6,15 @@
     <fullyQualifiedTypeName name="org.springframework.http.HttpStatus"/>
     <fullyQualifiedTypeName name="com.example.demo.service.ClientService"/>
     <fullyQualifiedTypeName name="com.example.demo.model.Requirement"/>
-    <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.annotation.JsonIgnoreProperties"/>
+    <fullyQualifiedTypeName name="org.springframework.cloud.client.discovery.EnableDiscoveryClient"/>
+    <fullyQualifiedTypeName name="com.example.demo.model.Vendor"/>
+    <fullyQualifiedTypeName name="com.example.demo.repository.VendorRepository"/>
+    <fullyQualifiedTypeName name="com.example.demo.DTO.SessionResponse.Builder"/>
+    <fullyQualifiedTypeName name="lombok.Builder"/>
+    <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
+    <fullyQualifiedTypeName name="com.example.demo.entity.Proposal"/>
+    <fullyQualifiedTypeName name="com.example.demo.entity.VendorTable"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.annotation.JsonIgnore"/>
+    <fullyQualifiedTypeName name="org.springframework.stereotype.Repository"/>
 </qualifiedTypeNameHistroy>
