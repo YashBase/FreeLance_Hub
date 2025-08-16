@@ -41,6 +41,7 @@ public class TaskTable {
     private TaskStatus status;
 
     public enum TaskStatus {
-        started, in_progress, completed
+    	
+        pending,started, in_progress, completed
     }
 }

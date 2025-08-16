@@ -59,10 +59,5 @@ public class VendorFeedbackService {
         return vendorFeedbackRepository.findByClientClientId(clientId);
     }
 
-    /**
-     * Vendor views all feedback received (optional use)
-     */
-    public List<VendorFeedback> getFeedbackForVendor(Integer vendorId) {
-        return vendorFeedbackRepository.findByVendorVendorId(vendorId);
-    }
+
 }

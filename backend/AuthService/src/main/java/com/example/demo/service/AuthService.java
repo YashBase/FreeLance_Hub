@@ -34,6 +34,7 @@ public class AuthService {
     // Role ID constants (match your DB IDs)
     private static final int ROLE_CLIENT_ID = 1;
     private static final int ROLE_VENDOR_ID = 2;
+    private static final int ROLE_ADMIN_ID = 3;
 
     @Transactional(readOnly = true)
     public SessionResponse login(LoginRequest request) {
@@ -54,11 +55,27 @@ public class AuthService {
         Integer roleId = (user.getRole() != null) ? user.getRole().getRoleId() : null;
         String roleName = (user.getRole() != null) ? user.getRole().getRoleName() : null;
 
+        // ✅ Directly return for Admin role
+        if (ROLE_ADMIN_ID == roleId) {
+            return new SessionResponse.Builder()
+                    .userId(user.getUserId())
+                    .roleId(roleId)
+                    .clientId(null)
+                    .vendorId(null)
+                    .email(user.getEmail())
+                    .userName(user.getUserName())
+                    .roleName(roleName)
+                    .build();
+        }
+
+        // ✅ Client mapping
         if (ROLE_CLIENT_ID == roleId) {
             clientId = clientRepository.findByUser(user)
                     .map(ClientTable::getClientId)
                     .orElse(null);
-        } else if (ROLE_VENDOR_ID == roleId) {
+        } 
+        // ✅ Vendor mapping
+        else if (ROLE_VENDOR_ID == roleId) {
             vendorId = vendorRepository.findByUser(user)
                     .map(VendorTable::getVendorId)
                     .orElse(null);
@@ -89,6 +106,7 @@ public class AuthService {
         UserTable user = new UserTable.Builder()
                 .userName(request.getUserName())
                 .email(request.getEmail())
+                .contact(request.getContact())
                 .userPassword(request.getPassword()) // ⚠ Hash in production
                 .status(UserTable.Status.active)
                 .role(role)

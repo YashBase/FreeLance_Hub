@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/client/tasks")
+@CrossOrigin("*")
 @RequiredArgsConstructor
 public class TaskController {
     private final TaskService taskService;
@@ -23,11 +25,22 @@ public class TaskController {
     @GetMapping("/{clientId}")
     public ResponseEntity<List<TaskTable>> getClientTasks(
             @PathVariable Integer clientId,
-            @RequestParam(required = false) TaskTable.TaskStatus status,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) String keyword) {
 
-        return ResponseEntity.ok(taskService.searchTasks(clientId, status, keyword));
+        TaskTable.TaskStatus taskStatus = null;
+        if (status != null) {
+            try {
+                taskStatus = TaskTable.TaskStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                taskStatus = null; // invalid value, ignore
+            }
+        }
+
+        List<TaskTable> tasks = taskService.searchTasks(clientId, taskStatus, keyword);
+        return ResponseEntity.ok(tasks);
     }
+
 
     
 }

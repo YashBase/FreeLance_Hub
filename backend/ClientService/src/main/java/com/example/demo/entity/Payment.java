@@ -30,12 +30,10 @@ public class Payment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_id", nullable = false)
-    @JsonIgnore
     private VendorTable vendor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", nullable = false)
-    @JsonIgnore
     private TaskTable task;
 
     @Column(name = "date", nullable = false)
