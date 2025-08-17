@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/vendor")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class VendorRequirementController {
 
     private final VendorRequirmentService vendorRequirementService;

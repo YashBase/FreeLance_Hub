@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/proposals")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ProposalController {
 
     private final ProposalService proposalService;

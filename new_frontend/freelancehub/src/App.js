@@ -14,6 +14,9 @@ import ProposalPage from './pages/Client/ProposalPage';
 import TaskPage from './pages/Client/TaskPage';
 import PaymentPage from './pages/Client/PaymentPage';
 import FeedbackPage from './pages/Client/FeedBackPage';
+import Requirement from './pages/Vendor/RequirementPage';
+import Proposal from './pages/Vendor/ProposalPage';
+import Tasks from './pages/Vendor/TaskPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRole }) => {
@@ -100,6 +103,31 @@ function App() {
             </ProtectedRoute>
           }
         />
+          <Route
+          path="/vendor-requirements"
+          element={
+            <ProtectedRoute allowedRole={2}>
+              <Requirement />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path="/vendor-proposals"
+          element={
+            <ProtectedRoute allowedRole={2}>
+              <Proposal />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/vendor-tasks"
+          element={
+            <ProtectedRoute allowedRole={2}>
+              <Tasks />
+            </ProtectedRoute>
+          }
+        />
+        
 
         {/* Admin Module (roleId = 3) */}
         <Route
