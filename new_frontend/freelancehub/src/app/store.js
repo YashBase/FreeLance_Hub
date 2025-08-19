@@ -25,6 +25,8 @@ import vendorDashboardReducer from "../features/vendor/dashboardSlice";
 import vendorRequirementsReducer from "../features/vendor/requirementSlice";
 import vendorProposalReducer from "../features/vendor/proposalSlice";
 import vendorTaskReducer from "../features/vendor/taskSlice";
+import vendorpaymentReducer from "../features/vendor/paymentSlice";
+import FeedbackReducer from "../features/vendor/feedbackSlice";
 
 // Persist config for auth slice only
 const persistConfig = {
@@ -41,12 +43,14 @@ const rootReducer = combineReducers({
   requirement: requirementReducer,
   proposals: proposalReducer,
   tasks: taskReducer,
-  payment: paymentReducer,
+  payment: paymentReducer, 
   vendorFeedback: vendorFeedbackReducer,
   vendorDashboard: vendorDashboardReducer,
   vendorRequirements: vendorRequirementsReducer,
   vendorProposals: vendorProposalReducer,
   vendorTasks: vendorTaskReducer,
+  vendorPayments: vendorpaymentReducer,
+  Feedback: FeedbackReducer,
 });
 
 export const store = configureStore({

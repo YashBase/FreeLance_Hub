@@ -14,6 +14,7 @@ export const fetchMatchedRequirements = createAsyncThunk(
           sortBy: sortBy || "budget",
         },
       });
+      console.log("📌 API response:", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(

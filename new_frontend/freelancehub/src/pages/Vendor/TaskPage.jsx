@@ -1,12 +1,12 @@
 // src/pages/vendor/TaskPage.jsx
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAcceptedTasks,
   fetchAllTasks,
   updateTaskStatus,
 } from "../../features/vendor/taskSlice"; // ✅ updated slice import
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/vendorSidebar";
 import { motion } from "framer-motion";
 import { ClipboardCheck, ClipboardList, Loader2 } from "lucide-react";
 
@@ -16,6 +16,7 @@ export default function TaskPage() {
   // ✅ VendorId from auth slice
   const { user } = useSelector((state) => state.auth);
   const vendorId = user?.vendorId ?? user?.id ?? user?.userId ?? null;
+  const [sidebarOpen, setSidebarOpen] = useState(true); 
 
   const { acceptedTasks, allTasks, loading, error } = useSelector(
     (state) => state.vendorTasks
@@ -40,7 +41,7 @@ export default function TaskPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* Content */}
       <div className="flex-1 p-6 ml-64">

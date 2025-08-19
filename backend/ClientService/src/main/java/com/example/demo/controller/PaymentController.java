@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/payment")
+@RequestMapping("/api/payments")
 @CrossOrigin("*")
 public class PaymentController {
 
@@ -19,41 +19,23 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    /**
-     * Endpoint for client to make payment for a completed task.
-     *
-     * Example:
-     * POST /api/payment/make?clientId=1&vendorId=2&taskId=3&amount=500.00
-     *
-     * @param clientId Client making the payment
-     * @param vendorId Vendor receiving payment
-     * @param taskId Task for which payment is made
-     * @param amount Payment amount
-     * @return Saved PaymentDTO
-     */
-    @PostMapping("/make")
-    public ResponseEntity<PaymentDTO> makePayment(
-            @RequestParam Integer clientId,
-            @RequestParam Integer vendorId,
-            @RequestParam Integer taskId,
+    // When task is completed → create pending payment
+    @PostMapping("/pending/{taskId}")
+    public ResponseEntity<PaymentDTO> createPendingPayment(
+            @PathVariable Integer taskId,
             @RequestParam BigDecimal amount) {
-
-        PaymentDTO paymentDTO = paymentService.makePayment(clientId, vendorId, taskId, amount);
-        return ResponseEntity.ok(paymentDTO);
+        return ResponseEntity.ok(paymentService.createPendingPayment(taskId, amount));
     }
 
-    /**
-     * Endpoint for client to view their payment history.
-     *
-     * Example:
-     * GET /api/payment/history/{clientId}
-     *
-     * @param clientId Client ID
-     * @return List of PaymentDTOs made by the client
-     */
-    @GetMapping("/history/{clientId}")
-    public ResponseEntity<List<PaymentDTO>> getPaymentHistoryByClient(@PathVariable Integer clientId) {
-        List<PaymentDTO> paymentHistory = paymentService.getPaymentHistoryByClient(clientId);
-        return ResponseEntity.ok(paymentHistory);
+    // Client confirms & pays
+    @PutMapping("/confirm/{paymentId}")
+    public ResponseEntity<PaymentDTO> confirmPayment(@PathVariable Integer paymentId) {
+        return ResponseEntity.ok(paymentService.confirmPayment(paymentId));
+    }
+
+    // Client payment history
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<List<PaymentDTO>> getPaymentsByClient(@PathVariable Integer clientId) {
+        return ResponseEntity.ok(paymentService.getPaymentsByClient(clientId));
     }
 }

@@ -31,7 +31,7 @@ public class TaskController {
         TaskTable.TaskStatus taskStatus = null;
         if (status != null) {
             try {
-                taskStatus = TaskTable.TaskStatus.valueOf(status.toUpperCase());
+                taskStatus = TaskTable.TaskStatus.valueOf(status.toLowerCase());
             } catch (IllegalArgumentException e) {
                 taskStatus = null; // invalid value, ignore
             }

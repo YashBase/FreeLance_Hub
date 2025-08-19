@@ -1,115 +1,111 @@
+// src/features/payment/paymentsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../../api/axiosClient";
 
-// Fetch payment history for logged-in client
-export const fetchPaymentHistory = createAsyncThunk(
-  "payment/fetchPaymentHistory",
-  async (_, { getState, rejectWithValue }) => {
+// 🔹 Create a pending payment when task is completed
+export const createPendingPayment = createAsyncThunk(
+  "payments/createPendingPayment",
+  async ({ taskId, amount }, { rejectWithValue }) => {
     try {
-      const state = getState();
-      const clientId = state.auth.user?.userId; // automatically use logged-in clientId
-      if (!clientId) throw new Error("Client not logged in");
-
-      const response = await axiosClient.get(`/payment/history/${clientId}`);
-      // Make sure we return an array
-      return Array.isArray(response.data) ? response.data : response.data.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
-    }
-  }
-);
-
-// Make a new payment
-export const makePayment = createAsyncThunk(
-  "payment/makePayment",
-  async ({ vendorId, taskId, amount }, { getState, rejectWithValue }) => {
-    try {
-      const state = getState();
-      const clientId = state.auth.user?.userId;
-      if (!clientId) throw new Error("Client not logged in");
-
-      const response = await axiosClient.post(
-        `/payment/make`,
-        null,
-        {
-          params: { clientId, vendorId, taskId, amount },
-        }
-      );
-
-      // Return newly added payment
+      const response = await axiosClient.post(`/payments/pending/${taskId}`, null, {
+        params: { amount },
+      });
       return response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(err.response?.data || "Failed to create pending payment");
     }
   }
 );
 
-const paymentSlice = createSlice({
-  name: "payment",
+// 🔹 Confirm payment (mark as PAID)
+export const confirmPayment = createAsyncThunk(
+  "payments/confirmPayment",
+  async (paymentId, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.put(`/payments/confirm/${paymentId}`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to confirm payment");
+    }
+  }
+);
+
+// 🔹 Fetch all payments for a client
+export const fetchPaymentsByClient = createAsyncThunk(
+  "payments/fetchPaymentsByClient",
+  async (clientId, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.get(`/payments/client/${clientId}`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to fetch client payments");
+    }
+  }
+);
+
+const paymentsSlice = createSlice({
+  name: "payments",
   initialState: {
-    history: [],
+    payments: [],
     loading: false,
     error: null,
-    success: false,
   },
   reducers: {
     clearPaymentState: (state) => {
-      state.history = [];
+      state.error = null;
       state.loading = false;
-      state.error = null;
-      state.success = false;
-    },
-    clearError: (state) => {
-      state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Fetch History
-      .addCase(fetchPaymentHistory.pending, (state) => {
+      // 🔹 Create Pending Payment
+      .addCase(createPendingPayment.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchPaymentHistory.fulfilled, (state, action) => {
+      .addCase(createPendingPayment.fulfilled, (state, action) => {
         state.loading = false;
-        state.history = action.payload;
-
-        // Log the fetched payment history with details
-        console.log("✅ Payment history fetched:", action.payload);
+        state.payments.push(action.payload);
       })
-      .addCase(fetchPaymentHistory.rejected, (state, action) => {
+      .addCase(createPendingPayment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      // Make Payment
-      .addCase(makePayment.pending, (state) => {
+
+      // 🔹 Confirm Payment
+      .addCase(confirmPayment.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.success = false; // reset success flag on new request
       })
-      .addCase(makePayment.fulfilled, (state, action) => {
+      .addCase(confirmPayment.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = true;
-        state.history.push(action.payload); // append new payment
-
-        // Log the new payment added, with property names to display data easily
-        console.log("✅ New payment made:", {
-          id: action.payload.id || action.payload.paymentId,
-          vendorId: action.payload.vendorId,
-          taskId: action.payload.taskId,
-          amount: action.payload.amount,
-          date: action.payload.date || action.payload.createdAt,
-          status: action.payload.status,
-          // add other relevant properties here as per your payload structure
-        });
+        const index = state.payments.findIndex(
+          (p) => p.paymentId === action.payload.paymentId
+        );
+        if (index !== -1) {
+          state.payments[index] = action.payload;
+        }
       })
-      .addCase(makePayment.rejected, (state, action) => {
+      .addCase(confirmPayment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        state.success = false;
+      })
+
+      // 🔹 Fetch Payments By Client
+      .addCase(fetchPaymentsByClient.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPaymentsByClient.fulfilled, (state, action) => {
+        state.loading = false;
+        state.payments = action.payload;
+      })
+      .addCase(fetchPaymentsByClient.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearPaymentState, clearError } = paymentSlice.actions;
-export default paymentSlice.reducer;
+export const { clearPaymentState } = paymentsSlice.actions;
+export default paymentsSlice.reducer;

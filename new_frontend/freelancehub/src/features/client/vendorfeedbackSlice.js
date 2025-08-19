@@ -2,13 +2,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../../api/axiosClient"; 
 
-// 1️⃣ Submit feedback (clientId comes from authSlice state)
+// 1️⃣ Submit feedback
 export const submitFeedback = createAsyncThunk(
   "vendorFeedback/submitFeedback",
   async ({ vendorId, rating }, { getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const clientId = state.auth.user?.userId; // assuming authSlice stores user object with id
+      const clientId = state.auth?.user?.clientId;// ✅ use userId consistently
       if (!clientId) throw new Error("Client not logged in");
 
       const response = await axiosClient.post("/feedback/submit", null, {
@@ -21,13 +21,13 @@ export const submitFeedback = createAsyncThunk(
   }
 );
 
-// 2️⃣ Fetch feedback history by logged-in client
+// 2️⃣ Fetch feedback history
 export const fetchFeedbackHistory = createAsyncThunk(
   "vendorFeedback/fetchFeedbackHistory",
   async (_, { getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const clientId = state.auth.user?.id;
+      const clientId = state.auth?.user?.clientId; // ✅ same here
       if (!clientId) throw new Error("Client not logged in");
 
       const response = await axiosClient.get(`/feedback/client/${clientId}`);

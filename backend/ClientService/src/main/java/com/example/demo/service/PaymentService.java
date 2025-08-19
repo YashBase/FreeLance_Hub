@@ -4,6 +4,7 @@ import com.example.demo.DTO.PaymentDTO;
 import com.example.demo.entity.ClientTable;
 import com.example.demo.entity.Payment;
 import com.example.demo.entity.TaskTable;
+import com.example.demo.entity.TaskTable.TaskStatus;
 import com.example.demo.entity.VendorTable;
 import com.example.demo.repository.ClientRepository;
 import com.example.demo.repository.PaymentRepository;
@@ -27,7 +28,6 @@ public class PaymentService {
     private final VendorRepository vendorRepository;
     private final TaskRepository taskRepository;
 
-    // Explicit constructor
     public PaymentService(PaymentRepository paymentRepository,
                           ClientRepository clientRepository,
                           VendorRepository vendorRepository,
@@ -38,50 +38,85 @@ public class PaymentService {
         this.taskRepository = taskRepository;
     }
 
+    /**
+     * Auto-create a pending payment when task is marked completed
+     */
     @Transactional
-    public PaymentDTO makePayment(Integer clientId, Integer vendorId, Integer taskId, BigDecimal amount) {
-
-        ClientTable client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
-
-        VendorTable vendor = vendorRepository.findById(vendorId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found"));
-
+    public PaymentDTO createPendingPayment(Integer taskId, BigDecimal amount) {
         TaskTable task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
+        if (task.getStatus() != TaskStatus.completed) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task is not completed yet");
+        }
+
+
+        ClientTable client = task.getProposal().getRequirement().getClient();
+        VendorTable vendor = task.getProposal().getVendor();
+
         Payment payment = Payment.builder()
+                .task(task)
                 .client(client)
                 .vendor(vendor)
-                .task(task)
                 .amount(amount)
                 .date(new Date())
+                .status("PENDING") // Initially pending
                 .build();
 
         Payment saved = paymentRepository.save(payment);
 
         return new PaymentDTO(
                 saved.getPaymentId(),
-                saved.getTask().getTaskName(),
-                saved.getTask().getTaskId(),
-                saved.getVendor().getVendorId(),
+                task.getTaskName(),
+                task.getTaskId(),
+                vendor.getVendorId(),
                 saved.getAmount(),
-                saved.getDate()
+                saved.getDate(),
+                saved.getStatus()
         );
     }
 
-    public List<PaymentDTO> getPaymentHistoryByClient(Integer clientId) {
-        List<Payment> payments = paymentRepository.findByClientClientId(clientId);
+    /**
+     * Confirm & pay pending payment
+     */
+    @Transactional
+    public PaymentDTO confirmPayment(Integer paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found"));
 
-        return payments.stream()
+        if (!"PENDING".equalsIgnoreCase(payment.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment is not pending");
+        }
+
+        payment.setStatus("PAID");
+        Payment updated = paymentRepository.save(payment);
+
+        return new PaymentDTO(
+                updated.getPaymentId(),
+                updated.getTask().getTaskName(),
+                updated.getTask().getTaskId(),
+                updated.getVendor().getVendorId(),
+                updated.getAmount(),
+                updated.getDate(),
+                updated.getStatus()
+        );
+    }
+
+    /**
+     * View client’s payments
+     */
+    public List<PaymentDTO> getPaymentsByClient(Integer clientId) {
+        return paymentRepository.findByClientClientId(clientId).stream()
                 .map(p -> new PaymentDTO(
                         p.getPaymentId(),
                         p.getTask().getTaskName(),
                         p.getTask().getTaskId(),
                         p.getVendor().getVendorId(),
                         p.getAmount(),
-                        p.getDate()
+                        p.getDate(),
+                        p.getStatus()
                 ))
                 .collect(Collectors.toList());
     }
+
 }

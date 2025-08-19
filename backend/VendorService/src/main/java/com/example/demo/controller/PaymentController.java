@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.DTO.PaymentDTO;
 import com.example.demo.entity.Payment;
 import com.example.demo.services.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,8 @@ public class PaymentController {
      * Get all payments for a vendor
      */
     @GetMapping("/{vendorId}")
-    public ResponseEntity<List<Payment>> getPaymentsByVendorId(@PathVariable Integer vendorId) {
+    public ResponseEntity<List<PaymentDTO>> getPaymentsByVendorId(@PathVariable Integer vendorId) {
         return ResponseEntity.ok(paymentService.getPaymentsByVendorId(vendorId));
     }
+
 }

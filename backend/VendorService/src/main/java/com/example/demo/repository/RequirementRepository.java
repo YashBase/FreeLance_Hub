@@ -13,20 +13,11 @@ import java.util.List;
 @Repository
 public interface RequirementRepository extends JpaRepository<RequirementTable, Integer> {
 
-    @Query("""
-        SELECT DISTINCT r FROM RequirementTable r
-        JOIN r.requirementSkills rs
-        JOIN rs.skill s
-        WHERE s.skillId IN (
-            SELECT vs.skill.skillId FROM VendorSkillsTable vs
-            WHERE vs.vendor.vendorId = :vendorId
-        )
-        AND (:minBudget IS NULL OR r.budget >= :minBudget)
-        AND (:maxBudget IS NULL OR r.budget <= :maxBudget)
-        ORDER BY
-            CASE WHEN :sortBy = 'budget' THEN r.budget END ASC,
-            CASE WHEN :sortBy = 'title' THEN r.title END ASC
-    """)
+	@Query("""
+		    SELECT DISTINCT r FROM RequirementTable r
+		    WHERE (:minBudget IS NULL OR r.budget >= :minBudget)
+		    AND (:maxBudget IS NULL OR r.budget <= :maxBudget)
+		""")
     List<RequirementTable> findMatchedRequirements(
             @Param("vendorId") Integer vendorId,
             @Param("minBudget") BigDecimal minBudget,

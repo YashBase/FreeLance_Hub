@@ -1,5 +1,5 @@
 // src/pages/RegisterPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ import { UserPlus, Mail, Lock, Loader2, Home, ArrowRight, Users, Phone, Briefcas
 export default function RegisterPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, roleId, loading, error } = useSelector((state) => state.auth);
+  const { loading, error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     userName: '',
@@ -39,22 +39,25 @@ export default function RegisterPage() {
       contact: formData.contact,
       password: formData.password,
       roleId: Number(formData.roleId),
-      experience: formData.roleId === "2" ? formData.experience : null
+      experience: formData.roleId === 2 ? formData.experience : null
     };
 
     console.log('📤 Sending registration data:', payload);
-    await dispatch(registerUser(payload));
-  };
 
-  useEffect(() => {
-    if (user && roleId) {
-      if (roleId === 1) {
-        navigate('/client');
-      } else if (roleId === 2) {
-        navigate('/vendor');
+    try {
+      const resultAction = await dispatch(registerUser(payload));
+      if (registerUser.fulfilled.match(resultAction)) {
+        alert('Registration successful! Please login.');
+        navigate('/login'); // Redirect to login after registration
+      } else {
+        // Optionally handle error returned from backend
+        alert(resultAction.payload || 'Registration failed.');
       }
+    } catch (err) {
+      console.error('Registration error:', err);
+      alert('Registration failed. Please try again.');
     }
-  }, [user, roleId, navigate]);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] p-4">

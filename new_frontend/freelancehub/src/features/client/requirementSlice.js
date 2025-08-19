@@ -8,7 +8,8 @@ export const fetchMyRequirements = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const clientId = state.auth?.user?.userId; // 👈 fixed here
+      const clientId = state.auth?.user?.clientId; // ✅ correct
+ // 👈 fixed here
 
       if (!clientId) {
         throw new Error('Client ID not found in state. Please login again.');
@@ -32,7 +33,7 @@ export const postRequirement = createAsyncThunk(
   async (requirementData, { getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const clientId = state.auth?.user?.userId; // 👈 fixed here
+      const clientId = state.auth?.user?.clientId; // 👈 fixed here
 
       if (!clientId) {
         throw new Error('Client ID not found in state. Please login again.');

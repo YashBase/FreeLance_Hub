@@ -6,6 +6,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "payment_table")
 @Data
@@ -21,14 +23,17 @@ public class Payment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
+    @JsonIgnore
     private Client client;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_id", nullable = false)
+    @JsonIgnore
     private VendorTable vendor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", nullable = false)
+    @JsonIgnore
     private Task task;
 
     @Column(name = "date", nullable = false)
@@ -37,4 +42,8 @@ public class Payment {
 
     @Column(name = "amount", precision = 10, scale = 2, nullable = false)
     private BigDecimal amount;
+    
+    // ✅ add this field
+    @Column(name = "status", nullable = false, length = 20)
+    private String status;
 }

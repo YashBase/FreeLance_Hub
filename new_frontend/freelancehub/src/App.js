@@ -17,6 +17,8 @@ import FeedbackPage from './pages/Client/FeedBackPage';
 import Requirement from './pages/Vendor/RequirementPage';
 import Proposal from './pages/Vendor/ProposalPage';
 import Tasks from './pages/Vendor/TaskPage';
+import Payments from './pages/Vendor/PaymentPage';
+import Feedback from './pages/Vendor/FeedbackPage'
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRole }) => {
@@ -124,6 +126,22 @@ function App() {
           element={
             <ProtectedRoute allowedRole={2}>
               <Tasks />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/vendor-payments"
+          element={
+            <ProtectedRoute allowedRole={2}>
+              <Payments />
+            </ProtectedRoute>
+          }
+        />
+                <Route
+          path="/vendor-feedback"
+          element={
+            <ProtectedRoute allowedRole={2}>
+              <Feedback />
             </ProtectedRoute>
           }
         />
