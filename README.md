@@ -1,7 +1,7 @@
 
 <!-- Project Logo -->
 <p align="center">
-  <img src="[docs/logo.png](https://www.canva.com/design/DAGxAYftiiQ/OP41a29YhQUaVD1aA8J30A/view?utm_content=DAGxAYftiiQ&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h59a6fb29b9)" alt="Meet Your Need Logo" width="150"/>
+  <img src="" alt="Meet Your Need Logo" width="150"/>
 </p>
 
 <h1 align="center">Meet Your Need</h1>
