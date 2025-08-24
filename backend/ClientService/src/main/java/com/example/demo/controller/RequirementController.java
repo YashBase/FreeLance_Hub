@@ -12,7 +12,6 @@ import com.example.demo.service.RequirementService;
 
 @RestController
 @RequestMapping("/api/requirements")
-@CrossOrigin("*")
 public class RequirementController {
 
     @Autowired

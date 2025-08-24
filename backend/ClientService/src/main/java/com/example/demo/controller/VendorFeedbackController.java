@@ -12,7 +12,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/feedback")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class VendorFeedbackController {
 
     private final VendorFeedbackService vendorFeedbackService;

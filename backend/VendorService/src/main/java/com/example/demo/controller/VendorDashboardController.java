@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/vendor/dashboard")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class VendorDashboardController {
 
     private final VendorDashboardService vendorDashboardService;

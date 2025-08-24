@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/vendor/tasks")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class VendorTaskController {
 
     private final VendorTaskService vendorTaskService;

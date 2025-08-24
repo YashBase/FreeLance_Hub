@@ -12,7 +12,6 @@ import com.example.demo.service.ProposalService;
 
 @RestController
 @RequestMapping("/api/proposals")
-@CrossOrigin("*")
 public class ProposalController {
 
     @Autowired
