@@ -10,9 +10,11 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 public class VendorTaskDTO {
+	private Integer taskId; 
     private String taskTitle;
     private String requirementTitle;
     private String clientName;
     private Date deadline;
     private String status;
+    private String description; 
 }

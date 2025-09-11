@@ -1,27 +1,26 @@
 package com.example.demo.service;
 
-
-
+import com.example.demo.DTO.PaymentDTO;
 import com.example.demo.entity.ClientTable;
 import com.example.demo.entity.Payment;
 import com.example.demo.entity.TaskTable;
+import com.example.demo.entity.TaskTable.TaskStatus;
 import com.example.demo.entity.VendorTable;
 import com.example.demo.repository.ClientRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.VendorRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
@@ -29,47 +28,95 @@ public class PaymentService {
     private final VendorRepository vendorRepository;
     private final TaskRepository taskRepository;
 
+    public PaymentService(PaymentRepository paymentRepository,
+                          ClientRepository clientRepository,
+                          VendorRepository vendorRepository,
+                          TaskRepository taskRepository) {
+        this.paymentRepository = paymentRepository;
+        this.clientRepository = clientRepository;
+        this.vendorRepository = vendorRepository;
+        this.taskRepository = taskRepository;
+    }
+
     /**
-     * Client makes payment for a completed task.
-     * 
-     * @param clientId Client making payment
-     * @param vendorId Vendor receiving payment
-     * @param taskId Task for which payment is made
-     * @param amount Amount paid
-     * @return Saved Payment entity
+     * Auto-create a pending payment when task is marked completed
      */
     @Transactional
-    public Payment makePayment(Integer clientId, Integer vendorId, Integer taskId, BigDecimal amount) {
-
-        ClientTable client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
-
-        VendorTable vendor = vendorRepository.findById(vendorId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found"));
-
+    public PaymentDTO createPendingPayment(Integer taskId, BigDecimal amount) {
         TaskTable task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
-        // Optional: Add business logic to check if task is actually completed, client/vendor match, etc.
+        if (task.getStatus() != TaskStatus.completed) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task is not completed yet");
+        }
+
+
+        ClientTable client = task.getProposal().getRequirement().getClient();
+        VendorTable vendor = task.getProposal().getVendor();
 
         Payment payment = Payment.builder()
+                .task(task)
                 .client(client)
                 .vendor(vendor)
-                .task(task)
                 .amount(amount)
-                .date(new Date()) // use current date
+                .date(new Date())
+                .status("PENDING") // Initially pending
                 .build();
 
-        return paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
+
+        return new PaymentDTO(
+                saved.getPaymentId(),
+                task.getTaskName(),
+                task.getTaskId(),
+                vendor.getVendorId(),
+                saved.getAmount(),
+                saved.getDate(),
+                saved.getStatus()
+        );
     }
 
     /**
-     * Client views their payment history with details
-     * 
-     * @param clientId Client ID
-     * @return List of payments made by the client
+     * Confirm & pay pending payment
      */
-    public List<Payment> getPaymentHistoryByClient(Integer clientId) {
-        return paymentRepository.findByClientClientId(clientId);
+    @Transactional
+    public PaymentDTO confirmPayment(Integer paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found"));
+
+        if (!"PENDING".equalsIgnoreCase(payment.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment is not pending");
+        }
+
+        payment.setStatus("PAID");
+        Payment updated = paymentRepository.save(payment);
+
+        return new PaymentDTO(
+                updated.getPaymentId(),
+                updated.getTask().getTaskName(),
+                updated.getTask().getTaskId(),
+                updated.getVendor().getVendorId(),
+                updated.getAmount(),
+                updated.getDate(),
+                updated.getStatus()
+        );
     }
+
+    /**
+     * View client’s payments
+     */
+    public List<PaymentDTO> getPaymentsByClient(Integer clientId) {
+        return paymentRepository.findByClientClientId(clientId).stream()
+                .map(p -> new PaymentDTO(
+                        p.getPaymentId(),
+                        p.getTask().getTaskName(),
+                        p.getTask().getTaskId(),
+                        p.getVendor().getVendorId(),
+                        p.getAmount(),
+                        p.getDate(),
+                        p.getStatus()
+                ))
+                .collect(Collectors.toList());
+    }
+
 }

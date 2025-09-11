@@ -1,7 +1,7 @@
 
 <!-- Project Logo -->
 <p align="center">
-  <img src="docs/logo.png" alt="Meet Your Need Logo" width="150"/>
+  <img src="" alt="Meet Your Need Logo" width="150"/>
 </p>
 
 <h1 align="center">Meet Your Need</h1>
@@ -27,9 +27,8 @@ The workflow ensures **secure, efficient, and transparent transactions** from st
 ## **✨ Features**
 - 🔐 Secure authentication (JWT)
 - 🏗 Role-based access (Admin, Vendor, Client)
-- 📂 Vendor requirement posting & editing
+- 📂 Client requirement posting & editing
 - 🔍 Search & filtering for tasks
-- 💬 Real-time messaging between vendors & clients
 - ⭐ Feedback & rating system
 - ✅ Task lifecycle management
 - 💳 Secure payment workflow
@@ -39,11 +38,10 @@ The workflow ensures **secure, efficient, and transparent transactions** from st
 ## **🛠 Tech Stack**
 | **Category**   | **Technology**             |
 |----------------|----------------------------|
-| **Frontend**   | React.js, HTML, CSS, JS  |
-| **Backend**    | Spring Boot / Node.js     |
+| **Frontend**   | React.js, HTML, CSS, JS, Tailwindcss  |
+| **Backend**    | Spring Boot / ASP.NET     |
 | **Database**   | MySQL                    |
 | **Security**   | JWT, bcrypt encryption    |
-| **Optional**   | WebSockets, File Upload, Payment Gateway |
 
 ---
 
@@ -51,7 +49,7 @@ The workflow ensures **secure, efficient, and transparent transactions** from st
 ```
 MeetYourNeed/
 ├── backend/
-│   ├── controllers/
+│   ├── controller/
 │   ├── models/
 │   ├── routes/
 │   └── services/
@@ -129,8 +127,7 @@ npm start
 - Encrypted passwords (bcrypt)
 - JWT authentication
 - Session management
-- Account lock after multiple failed logins
-- Password reset via email
+
 
 ---
 

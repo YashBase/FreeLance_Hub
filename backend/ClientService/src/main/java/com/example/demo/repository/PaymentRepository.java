@@ -20,6 +20,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
      */
     @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.client.clientId = :clientId")
     BigDecimal totalPaymentsMadeByClient(Integer clientId);
+    
+    List<Payment> findByStatus(String status);   // find pending/paid
 
 
 }
