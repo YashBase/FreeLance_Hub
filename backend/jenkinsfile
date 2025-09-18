@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_COMPOSE_FILE = "docker-compose.yml"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/YashBase/FreeLance_Hub.git'
+            }
+        }
+
+        stage('Maven Build') {
+            steps {
+                script {
+                    // Build all Spring Boot services
+                    def services = ["AuthService", "ClientService", "VendorService", "ServiceRegistry", "ApiGatewatApplication"]
+                    for (service in services) {
+                        dir(service) {
+                            bat "mvn clean package -DskipTests"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Docker Compose Build & Up') {
+            steps {
+                script {
+                    // Stop and remove existing containers
+                    bat "docker-compose -f ${env.DOCKER_COMPOSE_FILE} down"
+                    // Build images and start containers
+                    bat "docker-compose -f ${env.DOCKER_COMPOSE_FILE} up -d --build"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "All services are running successfully!"
+        }
+        failure {
+            echo "Build or deployment failed!"
+        }
+    }
+}
