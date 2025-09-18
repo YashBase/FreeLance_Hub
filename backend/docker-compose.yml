@@ -1,0 +1,70 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydb
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  authservice:
+    build: ./AuthService
+    container_name: authservice
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/p12_meet_your_need
+    depends_on:
+      - mysql
+
+  clientservice:
+    build: ./ClientService
+    container_name: clientservice
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/p12_meet_your_need
+    depends_on:
+      - mysql
+
+  vendorservice:
+    build: ./VendorService
+    container_name: vendorservice
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/p12_meet_your_need
+    depends_on:
+      - mysql
+
+  serviceregistry:
+    build: ./ServiceRegistry
+    container_name: serviceregistry
+    ports:
+      - "8761:8761"
+
+  apigateway:
+    build: ./ApiGatewatApplication
+    container_name: apigateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - authservice
+      - clientservice
+      - vendorservice
+      - serviceregistry
+
+  frontend:
+    build: ./freelancehub
+    container_name: react-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - apigateway
+
+volumes:
+  mysql-data:
